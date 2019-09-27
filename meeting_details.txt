@@ -1,3 +1,5 @@
 Sept. 27 @ 9-10am
 Ryn and Chloe
 Set up a git repository and looked over the PDF
+discussed how to approach certain problems:
+	when reading, store label_val and label_addr when passing a label. If we reach a branch or jump statement, we will jump to that ine value in the txt/asm file. Then we will continue reading from there
