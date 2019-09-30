@@ -5,8 +5,8 @@ addi $11, $0, 4
 addi $12, $0, 5
 
 add $13, $8, $9
+addiu $14, $8, $9
 mult $8, $9
-j label
 multu $8, $9
 srl $13, $8, 1
 lb $13, 0 ($8)
@@ -19,4 +19,8 @@ bne $8, $9, next2
 next2:
 slt $13, $8, $9
 sltu $13, $8, $9
+j label
+
+addi $8, $0, 1
+
 label:
