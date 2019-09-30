@@ -1,10 +1,11 @@
-def saveJumpLabel(asm,labelIndex, labelName):
+def saveJumpLabel(asm,labelIndex, labelName, labelAddr):
     lineCount = 0
     for line in asm:
         line = line.replace(" ","")
         if(line.count(":")):
             labelName.append(line[0:line.index(":")]) # append the label name
-            labelIndex.append(lineCount) # append the label's index
+            labelIndex.append(lineCount) # append the label's index\
+            labelAddr.append(lineCount*4)
             asm[lineCount] = line[line.index(":")+1:]
         lineCount += 1
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
@@ -14,6 +15,7 @@ def regNameInit(regName):
     i = 0
     while i<=23:
         regName.append(str(i))
+        i = i + 1
     regName.append('lo')
     regName.append('hi')
         
@@ -21,16 +23,18 @@ def regNameInit(regName):
 def main():
     labelIndex = []
     labelName = []
+    labelAddr = []
     regName = []
+    PC = 0
     regNameInit(regName)
-    regVal = [0]*26 #0-23 and lo,hi
+    regval = [0]*26 #0-23 and lo,hi
     f = open("mc.txt","w+")
     h = open("mips1.asm","r")
     asm = h.readlines()
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
         asm.remove('\n')
 
-    saveJumpLabel(asm,labelIndex,labelName) # Save all jump's destinations
+    saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
     
     for line in asm:
         line = line.replace("\n","") # Removes extra chars
@@ -38,13 +42,14 @@ def main():
         line = line.replace(" ","")
         line = line.replace("zero","0") # assembly can also use both $zero and $0
 
-        if(line[0:4] == "addi"): # ADDI
+        if(line[0:4] == "addi"): # ADDI, $t = $s + imm; advance_pc (4); addi $t, $s, imm
+            #f.write(line)
             line = line.replace("addi","")
             line = line.split(",")
-            imm = format(int(line[2]),'016b') if (int(line[2]) > 0) else format(65536 + int(line[2]),'016b')
-            rs = format(int(line[1]),'05b')
-            rt = format(int(line[0]),'05b')
-            f.write(str('001000') + str(rs) + str(rt) + str(imm) + '\n')
+            regval[int(line[0])] = regval[int(line[1])] + int(line[2])
+            f.write('$' + line[0] + ' = ' + '$' + line[1] + ' + ' + line[2] + '; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
 
         elif(line[0:3] == "add"): # ADD
             line = line.replace("add","")
