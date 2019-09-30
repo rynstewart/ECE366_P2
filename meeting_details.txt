@@ -2,4 +2,12 @@ Sept. 27 @ 9-10am
 Ryn and Chloe
 Set up a git repository and looked over the PDF
 discussed how to approach certain problems:
-	when reading, store label_val and label_addr when passing a label. If we reach a branch or jump statement, we will jump to that ine value in the txt/asm file. Then we will continue reading from there
+	when reading, store label_val and label_addr when passing a label.
+	If we reach a branch or jump statement, we will jump to that ine 
+	value in the txt/asm file. Then we will continue reading from there
+
+Sept. 27 @ 11am-1pm
+Ryn and Chloe
+Started coding our portions we assigned to each other
+Ryn started on 'Toy' and Chloe started on the python code for printing out
+the information we needed for each instruction
