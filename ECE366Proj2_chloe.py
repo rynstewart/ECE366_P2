@@ -1,7 +1,6 @@
 def saveJumpLabel(asm,labelIndex, labelName, labelAddr):
     lineCount = 0
     for line in asm:
-        import pdb; pdb.set_trace
         line = line.replace(" ","")
         if(line.count(":")):
             labelName.append(line[0:line.index(":")]) # append the label name
@@ -22,7 +21,7 @@ def regNameInit(regName):
         
 
 def main():
-    import pdb; pdb.set_trace
+    
     labelIndex = []
     labelName = []
     labelAddr = []
@@ -198,7 +197,7 @@ def main():
             
             
         elif(line[0:1] == "j"): # JUMP
-            import pdb; pdb.set_trace
+            
             line = line.replace("j","")
             line = line.split(",")
 
@@ -216,7 +215,7 @@ def main():
                  f.write('PC is now at ' + str(line[0]) + '\n')
 
             else: # Jumping to label
-                import pdb; pdb.set_trace
+                
                 for i in range(len(labelName)):
                     if(labelName[i] == line[0]):
                         PC = labelAddr[i]
