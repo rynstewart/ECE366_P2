@@ -97,3 +97,15 @@ Operation: PC = nPC;
 PC is now at 88
 No Registers have changed. 
 ------------------------------ 
+------------------------------ 
+MIPS Instruction: mult $8, $9
+
+Operation: $LO = $8 * $9; 
+PC is now at 92
+Registers that have changed: $LO = 2
+------------------------------ 
+MIPS Instruction: multu $8, $9
+
+Operation: $LO = $8 * $9; 
+PC is now at 96
+Registers that have changed: $LO = 2
