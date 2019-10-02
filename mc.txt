@@ -77,15 +77,11 @@ MIPS Instruction: beq $8, $9, next
 
 00010001001010000000000000001111
 ------------------------------ 
-MIPS Instruction: next:
-
 ------------------------------ 
 MIPS Instruction: bne $8, $9, next2
 
 00010101001010000000000000010001
 ------------------------------ 
-MIPS Instruction: next2:
-
 ------------------------------ 
 MIPS Instruction: slt $13, $8, $9
 
@@ -101,5 +97,3 @@ Operation: PC = nPC;
 PC is now at 88
 No Registers have changed. 
 ------------------------------ 
-MIPS Instruction: label:
-

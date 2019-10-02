@@ -45,7 +45,8 @@ def main():
 
         line = asm[lineCount]
         f.write('------------------------------ \n')
-        f.write('MIPS Instruction: ' + line + '\n')
+        if(not(':' in line)):
+            f.write('MIPS Instruction: ' + line + '\n')
         
         line = line.replace("\n","") # Removes extra chars
         line = line.replace("$","")
