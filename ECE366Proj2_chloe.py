@@ -38,12 +38,16 @@ def main():
         asm.remove('\n')
 
     saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
-
+    import pdb; pdb.set_trace()             
+    
     f.write('Hello! This is our ECE 366 Project 2' + '\n')
     f.write('PC is now at ' + str(PC) + '\n')
-                 
-    for x, line in enumerate(asm):
-
+    
+    # for lineCount in len(asm)
+    linecount = 0
+    while(lineCount < len(asm)):
+        
+        line = asm[lineCount]
         f.write('------------------------------ \n')
         f.write('MIPS Instruction: ' + line + '\n')
         PC = PC + 4
@@ -232,7 +236,7 @@ def main():
             print(line)
             if(line[0].isdigit()): # First,test to see if it's a label or a integer
                  PC = line[0]
-                 x = line[0]
+                 lineCount = line[0]
                  f.write('PC is now at ' + str(line[0]) + '\n')
 
             else: # Jumping to label
@@ -240,10 +244,12 @@ def main():
                 for i in range(len(labelName)):
                     if(labelName[i] == line[0]):
                         PC = labelAddr[i]
-                        x = labelIndex[i]
+                        lineCount = labelIndex[i]
                         f.write('PC is now at ' + str(labelAddr[i]) + '\n')
             
             f.write('No Registers have changed. \n')
+            continue
+        lineCount = lineCount + 1
         
 
     f.close()
