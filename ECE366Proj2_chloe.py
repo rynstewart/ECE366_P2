@@ -38,7 +38,9 @@ def main():
         asm.remove('\n')
 
     saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
+
     #import pdb; pdb.set_trace()
+
     #for lineCount in len(asm):
     lineCount = 0
     while(lineCount < len(asm)):
@@ -101,6 +103,7 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '\n')
             
+
                 #srl
         elif(line[0:3] == "srl"): # $d = $t >> h; advance_pc (4); srl $d, $t, h
             line = line.replace("srl","")
@@ -132,9 +135,11 @@ def main():
             line = line.split(",")
             PC = PC + 4;
             regval[int(line[2])+int(line[1])] = format(int(line[0]),'08b')
+            regval[int(line[2])] = format(int(regval[int(line[2])]))
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
+
             
         #lw
         elif(line[0:2] == "lw"): # ADD
@@ -159,7 +164,7 @@ def main():
             regval[int(line[2])+int(line[1])] = format(int(line[0]),'032b')
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
+            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n') 
             
         #beq
         elif(line[0:3] == "beq"): # ADD
