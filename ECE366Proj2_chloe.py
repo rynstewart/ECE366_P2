@@ -38,7 +38,9 @@ def main():
         asm.remove('\n')
 
     saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
-    import pdb; pdb.set_trace()
+
+    #import pdb; pdb.set_trace()
+
     #for lineCount in len(asm):
     lineCount = 0
     while(lineCount < len(asm)):
@@ -101,36 +103,43 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '\n')
             
-        #srl
-        elif(line[0:3] == "srl"): # ADD
+
+                #srl
+        elif(line[0:3] == "srl"): # $d = $t >> h; advance_pc (4); srl $d, $t, h
             line = line.replace("srl","")
             line = line.split(",")
-            rd = format(int(line[0]),'05b')
-            rt = format(int(line[1]),'05b')
-            h = format(int(line[2]),'05b')
-            f.write(str('00000000000') + str(rt) + str(rd) + str(h) + str('000010') + '\n')
-            
+            PC = PC + 4;
+            f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' >> ' + line[2] + '; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')            
+            f.write('FIX THIS LOGIC FOR SHIFT LEFT ' + '\n')
+
         #lb
-        elif(line[0:2] == "lb"): # ADD
+        elif(line[0:2] == "lb"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
             line = line.replace("lb","")
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
-            rs = format(int(line[2]),'05b')
-            rt = format(int(line[0]),'05b')
-            imm = format(int(line[1]),'016b')
-            f.write(str('100000') + str(rs) + str(rt) + str(imm) + '\n')
+            PC = PC + 4;
+            regval[int(line[0])] = format(int(regval[int(line[1])+int(line[2])]),'08b')
+            regval[int(line[0])] = format(int(regval[int(line[0])]))
+            f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + ' \n')
             
         #sb
-        elif(line[0:2] == "sb"): # ADD
+        elif(line[0:2] == "sb"): # MEM[$s + offset] = (0xff & $t); advance_pc (4); sb $t, offset($s)
             line = line.replace("sb","")
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
-            rs = format(int(line[2]),'05b')
-            rt = format(int(line[0]),'05b')
-            imm = format(int(line[1]),'016b')
-            f.write(str('101000') + str(rs) + str(rt) + str(imm) + '\n')
+            PC = PC + 4;
+            regval[int(line[2])+int(line[1])] = format(int(line[0]),'08b')
+            regval[int(line[2])] = format(int(regval[int(line[2])]))
+            f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
+
             
         #lw
         elif(line[0:2] == "lw"): # ADD
@@ -138,21 +147,24 @@ def main():
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
-            rs = format(int(line[2]),'05b')
-            rt = format(int(line[0]),'05b')
-            imm = format(int(line[1]),'016b')
-            f.write(str('100011') + str(rs) + str(rt) + str(imm) + '\n')
+            PC = PC + 4;
+            regval[int(line[0])] = format(int(regval[int(line[1])+int(line[2])]),'032b')
+            regval[int(line[0])] = format(int(regval[int(line[0])]))
+            f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + ' \n')
             
         #sw
-        elif(line[0:2] == "sw"): # ADD
+        elif(line[0:2] == "sw"): # MEM[$s + offset] = $t; advance_pc (4); sw $t, offset($s)
             line = line.replace("sw","")
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
-            rs = format(int(line[2]),'05b')
-            rt = format(int(line[0]),'05b')
-            imm = format(int(line[1]),'016b')
-            f.write(str('101011') + str(rs) + str(rt) + str(imm) + '\n')
+            PC = PC + 4;
+            regval[int(line[2])+int(line[1])] = format(int(line[0]),'032b')
+            f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n') 
             
         #beq
         elif(line[0:3] == "beq"): # ADD
@@ -202,7 +214,7 @@ def main():
             
             
         elif(line[0:1] == "j"): # JUMP
-            import pdb; pdb.set_trace()
+            #import pdb; pdb.set_trace()
             line = line.replace("j","")
             line = line.split(",")
 
