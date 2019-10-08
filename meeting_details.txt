@@ -11,3 +11,17 @@ Ryn and Chloe
 Started coding our portions we assigned to each other
 Ryn started on 'Toy' and Chloe started on the python code for printing out
 the information we needed for each instruction
+
+Oct. 4 @ 11am-1pm
+Ryn and Chloe
+Working on special instruction as well as figuring out srl and other necessary instructions needed.
+
+Chloe Work:
+
+implemented instructions on python including addiu, addi, add, xor, multu, mult, lb, sb, lw, sw, lbu
+
+Ryn Work:
+
+implemented j on python
+
+Fabian Work:

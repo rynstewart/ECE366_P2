@@ -55,27 +55,36 @@ Registers that have changed: $LO = 2
 ------------------------------ 
 MIPS Instruction: srl $13, $8, 1
 
-00000000000010000110100001000010
+Operation: $13 = $8 >> 1; 
+PC is now at 40
+Registers that have changed: $13 = -1
 ------------------------------ 
 MIPS Instruction: lb $13, 0 ($8)
 
-10000001000011010000000000000000
+Operation: $13 = MEM[$8 + 0]; 
+PC is now at 44
+Registers that have changed: $13 = 1 
 ------------------------------ 
 MIPS Instruction: sb $13, 1 ($14)
 
-10100001110011010000000000000001
+Operation: MEM[$14 + 1] = $13; 
+PC is now at 48
+Registers that have changed: $15 = 1 
 ------------------------------ 
 MIPS Instruction: lw $13, 2 ($8)
 
-10001101000011010000000000000010
+Operation: $13 = MEM[$8 + 2]; 
+PC is now at 52
+Registers that have changed: $13 = 11 
 ------------------------------ 
 MIPS Instruction: sw $13, 3 ($14)
 
-10101101110011010000000000000011
+Operation: MEM[$14 + 3] = $13; 
+PC is now at 56
+Registers that have changed: $17 = 11 
 ------------------------------ 
 MIPS Instruction: beq $8, $9, next
 
-00010001001010000000000000001111
 ------------------------------ 
 ------------------------------ 
 MIPS Instruction: bne $8, $9, next2
