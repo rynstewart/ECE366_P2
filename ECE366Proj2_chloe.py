@@ -4,7 +4,7 @@
 """
 lui, ori, mfhi, mflo, slt
 andi, bne
-special instruction
+special instruction (hash)
    
 """
 
@@ -53,7 +53,7 @@ def main():
     regName = []
     PC = 0
     regNameInit(regName)
-    regval = [0]*26 #0-23 and lo,hi
+    regval = [0]*26 #0-23 and lo, hi
     LO = 24
     HI = 25
     f = open("mc.txt","w+")
@@ -123,20 +123,30 @@ def main():
             line = line.replace("multu","")
             line = line.split(",")
             PC = PC + 4
-            regval[LO] = regval[int(line[0])]*regval[int(line[1])]
+            temp = regval[int(line[0])]*regval[int(line[1])]
+            templo = format(temp, '064b')
+            templo = temp & 0x0000FFFF
+            temphi = temp >> 32
+            regval[LO] = int(templo)
+            regval[HI] = int(temphi)
             f.write('Operation: $LO' + ' = ' + '$' + line[0] + ' * $' + line[1] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '\n')
+            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '$HI = ' + str(regval[HI]) + '\n')
             
         #mult
         elif(line[0:4] == "mult"): # $LO = $s * $t; advance_pc (4); mult $s, $t
             line = line.replace("mult","")
             line = line.split(",")
             PC = PC + 4
-            regval[LO] = regval[int(line[0])]*regval[int(line[1])]
+            temp = regval[int(line[0])]*regval[int(line[1])]
+            templo = format(temp, '064b')
+            templo = temp & 0x0000FFFF
+            temphi = temp >> 32
+            regval[LO] = int(templo)
+            regval[HI] = int(temphi)
             f.write('Operation: $LO' + ' = ' + '$' + line[0] + ' * $' + line[1] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '\n')
+            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '$HI = ' + str(regval[HI]) + '\n')
             
 
                 #srl
