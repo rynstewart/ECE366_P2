@@ -126,7 +126,7 @@ def main():
             PC = PC + 4
             temp = regval[int(line[0])]*regval[int(line[1])]
             templo = format(temp, '064b')
-            templo = temp & 0x0000FFFF
+            templo = temp & 0x00000000FFFFFFFF
             temphi = temp >> 32
             regval[LO] = int(templo)
             regval[HI] = int(temphi)
@@ -141,7 +141,7 @@ def main():
             PC = PC + 4
             temp = regval[int(line[0])]*regval[int(line[1])]
             templo = format(temp, '064b')
-            templo = temp & 0x0000FFFF
+            templo = temp & 0x00000000FFFFFFFF
             temphi = temp >> 32
             regval[LO] = int(templo)
             regval[HI] = int(temphi)
