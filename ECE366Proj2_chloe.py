@@ -2,8 +2,7 @@
                        
 #####instructions we still need######
 """
-lui, ori, mfhi, mflo, slt
-andi, bne
+lui, ori, slt, andi, addu
 special instruction (hash)
    
 """
@@ -85,7 +84,7 @@ def main():
             line = line.replace("addiu","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = regval[int(line[1])] + int(line[2])
+            regval[int(line[0])] = regval[int(line[1])] + int(line[2],16)
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
@@ -113,11 +112,23 @@ def main():
             line = line.replace("xor","")
             line = line.split(",")
             PC = PC + 4
-            x = format(int(line[1]),'032b')^format(int(line[2]),'032b')
-            regval[int(line[0])] = int(x)
+            #x = format(int(line[1]),'032b')^format(int(line[2]),'032b')
+            x = format(int(line[1]),'032b')
+            y = format(int(line[2]),'032b')
+            z = int(x)^int(y)
+            regval[int(line[0])] = z
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' ^ $' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
+            
+        elif(line[0:3] == "lui"): # $t = (imm << 16); advance_pc (4); lui $t, imm
+            line = line.replace("lui","")
+            line = line.split(",")
+            PC = PC + 4
+            regval[int(line[0])] = int(line[1],16)
+            f.write('Operation: $' + line[0] + ' = ' + '(' + line[1] + ' << 16); ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + line[1] + '\n')            
             
         
         elif(line[0:5] == "multu"): # $LO = $s * $t; advance_pc (4); mult $s, $t
@@ -157,7 +168,7 @@ def main():
             #regval[int(line[0])] = rshift(regval[int(line[1])], int(line[2]))
             f.write('Operation: $' + line[0] + ' = ' + '$HI; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + regval[HI] + '\n')            
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[HI]) + '\n')            
         
         elif(line[0:4] == "mflo"): # Operation:$d = $LO; advance_pc (4);mflo $d
             line = line.replace("mflo","")
@@ -167,7 +178,7 @@ def main():
             #regval[int(line[0])] = rshift(regval[int(line[1])], int(line[2]))
             f.write('Operation: $' + line[0] + ' = ' + '$LO; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + regval[LO] + '\n')            
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[LO]) + '\n')            
         
                 #srl
         elif(line[0:3] == "srl"): # $d = $t >> h; advance_pc (4); srl $d, $t, h
@@ -179,6 +190,7 @@ def main():
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' >> ' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')            
+            
             
         elif(line[0:2] == "lbu"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
             line = line.replace("lbu","")
