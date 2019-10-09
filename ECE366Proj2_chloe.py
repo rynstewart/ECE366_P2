@@ -45,6 +45,22 @@ def rshift(val, n):
         return i
     """
 
+def hash(B, A):
+
+    #first fold (down to 32 bits)
+    C = B*A
+    C_hi = C << 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    C_hi = C << 16
+    C_low = C & 0x0000FFFF
+    C = C_hi * C_low
+    C_hi = C << 16
+    C_low = C & 0x0000FFFF
+    C = C_hi^C_low
+
+
 def main():
     
     labelIndex = []
@@ -71,6 +87,7 @@ def main():
     while(lineCount < len(asm)):
 
         line = asm[lineCount]
+        #import pdb; pdb.set_trace()
         f.write('------------------------------ \n')
         if(not(':' in line)):
             f.write('MIPS Instruction: ' + line + '\n')
@@ -225,22 +242,22 @@ def main():
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n') 
 
         #bne
-        elif(line[0:3] == "bne"): # ADD
+        elif(line[0:3] == "bne"): # BNE
             line = line.replace("bne","")
             line = line.split(",")
-            if(line[0]!=line[1]):
-                if(line[0].isdigit()): # First,test to see if it's a label or a integer
-                    PC = line[0]
-                    lineCount = line[0]
-                    f.write('PC is now at ' + str(line[0]) + '\n')
+            if(regval[int(line[0])]!=regval[int(line[1])]):
+                if(line[2].isdigit()): # First,test to see if it's a label or a integer
+                    PC = line[2]
+                    lineCount = line[2]
+                    f.write('PC is now at ' + str(line[2]) + '\n')
                 else: # Jumping to label
                     for i in range(len(labelName)):
-                        if(labelName[i] == line[0]):
+                        if(labelName[i] == line[2]):
                             PC = labelAddr[i]
                             lineCount = labelIndex[i]
-                            f.write('PC is now at ' + str(labelAddr[i]) + '\n')        
-            f.write('No Registers have changed. \n')
-            continue
+                            f.write('PC is now at ' + str(labelAddr[i]) + '\n')       
+                f.write('No Registers have changed. \n')
+                continue
 
         #sltu
         elif(line[0:4] == "sltu"): # ADD
