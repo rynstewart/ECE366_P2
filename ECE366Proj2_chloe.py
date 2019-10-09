@@ -15,7 +15,7 @@ def saveJumpLabel(asm,labelIndex, labelName, labelAddr):
         if(line.count(":")):
             labelName.append(line[0:line.index(":")]) # append the label name
             labelIndex.append(lineCount) # append the label's index\
-            labelAddr.append(0x2000 + lineCount*4)
+            labelAddr.append(lineCount*4)
             #asm[lineCount] = line[line.index(":")+1:]
         lineCount += 1
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
@@ -96,7 +96,7 @@ def hash(B, A, max):
 
 def main():
     
-    MEM = [0]*12288
+    MEM = [0]*12288 #intialize array to all 0s for 0x3000 indices
     labelIndex = []
     labelName = []
     labelAddr = []
@@ -258,8 +258,8 @@ def main():
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = format(int(MEM[int(line[1])+int(line[2])]),'08b')
-            regval[int(line[0])] = abs(format(int(regval[int(line[0])])))
+            regval[int(line[0])] = format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
+            regval[int(line[0])] = abs((int(regval[int(line[0])])))
             f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + ' \n')
@@ -271,8 +271,8 @@ def main():
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            MEM[int(line[2])+int(line[1])] = format(int(line[0]),'08b')
-            regval[int(line[2])] = format(int(regval[int(line[2])]))
+            MEM[regval[int(line[2])]+int(line[1])] = format(int(line[0]),'08b')
+            MEM[regval(int(line[2])))+int(line[1])] = int(MEM[regval[int(line[2])]+int(line[1])])
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
