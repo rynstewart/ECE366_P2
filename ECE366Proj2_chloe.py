@@ -149,7 +149,26 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + ', $HI = ' + str(regval[HI]) + '\n')
             
-
+        elif(line[0:4] == "mfhi"): # Operation:$d = $HI; advance_pc (4);mfhi $d
+            line = line.replace("mfhi","")
+            line = line.split(",")
+            PC = PC + 4
+            regval[int(line[0])] = regval[HI]
+            #regval[int(line[0])] = rshift(regval[int(line[1])], int(line[2]))
+            f.write('Operation: $' + line[0] + ' = ' + '$HI; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + regval[HI] + '\n')            
+        
+        elif(line[0:4] == "mflo"): # Operation:$d = $LO; advance_pc (4);mflo $d
+            line = line.replace("mflo","")
+            line = line.split(",")
+            PC = PC + 4
+            regval[int(line[0])] = regval[LO]
+            #regval[int(line[0])] = rshift(regval[int(line[1])], int(line[2]))
+            f.write('Operation: $' + line[0] + ' = ' + '$LO; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + regval[LO] + '\n')            
+        
                 #srl
         elif(line[0:3] == "srl"): # $d = $t >> h; advance_pc (4); srl $d, $t, h
             line = line.replace("srl","")
