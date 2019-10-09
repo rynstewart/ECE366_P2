@@ -45,20 +45,54 @@ def rshift(val, n):
         return i
     """
 
-def hash(B, A):
+def hash(B, A, max):
 
     #first fold (down to 32 bits)
     C = B*A
-    C_hi = C << 32
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+    
+    #Second fold (down to 16 bits)
+    C = B*C
+    C_hi = C >> 32
     C_low = C & 0x00000000FFFFFFFF
     C = C_hi^C_low
 
-    C_hi = C << 16
-    C_low = C & 0x0000FFFF
-    C = C_hi * C_low
+    #third fold
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #fourth fold
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #fifth fold
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #Down to 16 bits
     C_hi = C << 16
     C_low = C & 0x0000FFFF
     C = C_hi^C_low
+
+    #Down to 8 bits
+    C_hi = C << 8
+    C_low = C & 0x00FF
+    C = C_hi^C_low
+
+    if(max < C): 
+        max = C
+
+    if(0x1F in C):
+        #place in memory incremented by one
+
 
 
 def main():
@@ -103,6 +137,15 @@ def main():
             PC = PC + 4
             regval[int(line[0])] = regval[int(line[1])] + int(line[2])
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + line[2] + '; ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
+
+        if(line[0:5] == "addu"): # $t = $s + imm; advance_pc (4); addiu $t, $s, imm
+            line = line.replace("addu","")
+            line = line.split(",")
+            PC = PC + 4
+            regval[int(line[0])] = regval[int(line[1])] + regval[int(line[2])]
+            f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + '$' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
         
@@ -277,6 +320,16 @@ def main():
                 f.write('No Registers have changed. \n')
                 continue
             f.write('No Registers have changed. \n')
+        
+        #hash
+        elif(line[0:4]==hash):
+            line = line.replace("beq","")
+            line = line.split(",")
+            B = 0xFA19E366#int(line[0])
+            A = 0x01
+            max = 0
+            for(A in range(0x65)):
+                hash(B, A, max)
 
         #beq
         elif(line[0:3] == "beq"): # Beq
