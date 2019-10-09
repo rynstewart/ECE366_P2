@@ -218,15 +218,19 @@ def main():
         elif(line[0:3] == "bne"): # ADD
             line = line.replace("bne","")
             line = line.split(",")
-            rs = format(int(line[1]),'05b')
-            rt = format(int(line[0]),'05b')
-            if(line[2].isdigit()): # First,test to see if it's a label or a integer
-                f.write(str('000101') + str(rs) + str(rt) + str(format(int(line[2]),'016b')) + '\n')
-
-            else: # Jumping to label
-                for i in range(len(labelName)):
-                    if(labelName[i] == line[2]):
-                        f.write(str('000101') + str(rs) + str(rt) + str(format(int(labelIndex[i]),'016b')) + '\n')
+            if(line[0]!=line[1]):
+                if(line[0].isdigit()): # First,test to see if it's a label or a integer
+                    PC = line[0]
+                    lineCount = line[0]
+                    f.write('PC is now at ' + str(line[0]) + '\n')
+                else: # Jumping to label
+                    for i in range(len(labelName)):
+                        if(labelName[i] == line[0]):
+                            PC = labelAddr[i]
+                            lineCount = labelIndex[i]
+                            f.write('PC is now at ' + str(labelAddr[i]) + '\n')        
+            f.write('No Registers have changed. \n')
+            continue
 
         #sltu
         elif(line[0:4] == "sltu"): # ADD
@@ -258,7 +262,7 @@ def main():
             # We need to save the label destination and its target location
             if(line[0].isdigit()): # First,test to see if it's a label or a integer
                  PC = line[0]
-                 line = line[0]
+                 lineCount = line[0]
                  f.write('PC is now at ' + str(line[0]) + '\n')
             else: # Jumping to label
                 for i in range(len(labelName)):
