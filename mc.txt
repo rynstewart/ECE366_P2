@@ -45,13 +45,13 @@ MIPS Instruction: mult $8, $9
 
 Operation: $LO = $8 * $9; 
 PC is now at 32
-Registers that have changed: $LO = 2
+Registers that have changed: $LO = 2$HI = 0
 ------------------------------ 
 MIPS Instruction: multu $8, $9
 
 Operation: $LO = $8 * $9; 
 PC is now at 36
-Registers that have changed: $LO = 2
+Registers that have changed: $LO = 2$HI = 0
 ------------------------------ 
 MIPS Instruction: srl $13, $8, 1
 
@@ -61,27 +61,18 @@ Registers that have changed: $13 = -1
 ------------------------------ 
 MIPS Instruction: lb $13, 0 ($8)
 
-Operation: $13 = MEM[$8 + 0]; 
-PC is now at 44
-Registers that have changed: $13 = 1 
 ------------------------------ 
 MIPS Instruction: sb $13, 1 ($14)
 
 Operation: MEM[$14 + 1] = $13; 
-PC is now at 48
-Registers that have changed: $15 = 1 
+PC is now at 44
+Registers that have changed: $15 = -1 
 ------------------------------ 
 MIPS Instruction: lw $13, 2 ($8)
 
-Operation: $13 = MEM[$8 + 2]; 
-PC is now at 52
-Registers that have changed: $13 = 11 
 ------------------------------ 
 MIPS Instruction: sw $13, 3 ($14)
 
-Operation: MEM[$14 + 3] = $13; 
-PC is now at 56
-Registers that have changed: $17 = 11 
 ------------------------------ 
 MIPS Instruction: beq $8, $9, next
 
@@ -103,18 +94,18 @@ MIPS Instruction: sltu $13, $8, $9
 MIPS Instruction: j label
 
 Operation: PC = nPC; 
-PC is now at 88
+PC is now at 8280
 No Registers have changed. 
 ------------------------------ 
 ------------------------------ 
 MIPS Instruction: mult $8, $9
 
 Operation: $LO = $8 * $9; 
-PC is now at 92
-Registers that have changed: $LO = 2
+PC is now at 8284
+Registers that have changed: $LO = 2$HI = 0
 ------------------------------ 
 MIPS Instruction: multu $8, $9
 
 Operation: $LO = $8 * $9; 
-PC is now at 96
-Registers that have changed: $LO = 2
+PC is now at 8288
+Registers that have changed: $LO = 2$HI = 0

@@ -9,14 +9,15 @@ special instruction (hash)
 """
 
 
-def saveJumpLabel(asm,labelIndex, labelName, labelAddr):
+def saveJumpLabel(asm,labelIndex, labelName, labelAddr, instrAddr):
     lineCount = 0
     for line in asm:
         line = line.replace(" ","")
+        instrAddr.append(0x2000 + lineCount*4)
         if(line.count(":")):
             labelName.append(line[0:line.index(":")]) # append the label name
             labelIndex.append(lineCount) # append the label's index\
-            labelAddr.append(lineCount*4)
+            labelAddr.append(0x2000 + lineCount*4)
             #asm[lineCount] = line[line.index(":")+1:]
         lineCount += 1
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
@@ -47,6 +48,7 @@ def rshift(val, n):
 
 def main():
     
+    instrAddr = []
     labelIndex = []
     labelName = []
     labelAddr = []
@@ -62,8 +64,9 @@ def main():
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
         asm.remove('\n')
 
-    saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
+    saveJumpLabel(asm,labelIndex,labelName, labelAddr, instrAddr) # Save all jump's destinations
 
+    print (instrAddr)
     #import pdb; pdb.set_trace()
 
     #for lineCount in len(asm):
@@ -171,20 +174,7 @@ def main():
             f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + ' \n')
-            
-        #lb
-        elif(line[0:2] == "lb"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
-            line = line.replace("lb","")
-            line = line.replace("(",",")
-            line = line.replace(")","")
-            line = line.split(",")
-            PC = PC + 4
-            regval[int(line[0])] = format(int(regval[int(line[1])+int(line[2])]),'08b')
-            regval[int(line[0])] = format(int(regval[int(line[0])]))
-            f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
-            f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + ' \n')
-            
+         
         #sb
         elif(line[0:2] == "sb"): # MEM[$s + offset] = (0xff & $t); advance_pc (4); sb $t, offset($s)
             line = line.replace("sb","")
@@ -197,32 +187,6 @@ def main():
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
-
-            
-        #lw
-        elif(line[0:2] == "lw"): # ADD
-            line = line.replace("lw","")
-            line = line.replace("(",",")
-            line = line.replace(")","")
-            line = line.split(",")
-            PC = PC + 4
-            regval[int(line[0])] = format(int(regval[int(line[1])+int(line[2])]),'032b')
-            regval[int(line[0])] = format(int(regval[int(line[0])]))
-            f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
-            f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + ' \n')
-            
-        #sw
-        elif(line[0:2] == "sw"): # MEM[$s + offset] = $t; advance_pc (4); sw $t, offset($s)
-            line = line.replace("sw","")
-            line = line.replace("(",",")
-            line = line.replace(")","")
-            line = line.split(",")
-            PC = PC + 4
-            regval[int(line[2])+int(line[1])] = format(int(line[0]),'032b')
-            f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
-            f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n') 
 
         #bne
         elif(line[0:3] == "bne"): # ADD
