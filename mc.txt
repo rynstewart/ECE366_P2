@@ -45,13 +45,13 @@ MIPS Instruction: mult $8, $9
 
 Operation: $LO = $8 * $9; 
 PC is now at 32
-Registers that have changed: $LO = 2$HI = 0
+Registers that have changed: $LO = 2, $HI = 0
 ------------------------------ 
 MIPS Instruction: multu $8, $9
 
 Operation: $LO = $8 * $9; 
 PC is now at 36
-Registers that have changed: $LO = 2$HI = 0
+Registers that have changed: $LO = 2, $HI = 0
 ------------------------------ 
 MIPS Instruction: srl $13, $8, 1
 
@@ -102,10 +102,10 @@ MIPS Instruction: mult $8, $9
 
 Operation: $LO = $8 * $9; 
 PC is now at 8284
-Registers that have changed: $LO = 2$HI = 0
+Registers that have changed: $LO = 2, $HI = 0
 ------------------------------ 
 MIPS Instruction: multu $8, $9
 
 Operation: $LO = $8 * $9; 
 PC is now at 8288
-Registers that have changed: $LO = 2$HI = 0
+Registers that have changed: $LO = 2, $HI = 0
