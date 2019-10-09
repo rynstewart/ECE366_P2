@@ -24,3 +24,6 @@ j label
 addi $8, $0, 1
 
 label:
+mult $8, $9
+multu $8, $9
+

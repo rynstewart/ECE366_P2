@@ -4,6 +4,7 @@
 """
 lui, ori, mfhi, mflo, slt
 andi, bne
+<<<<<<< HEAD
 special instruction
 
 
@@ -13,6 +14,9 @@ mfhi, mflo - needs mult rework
 ori - DONE
 bne - 
 lui - 
+=======
+special instruction (hash)
+>>>>>>> master
    
 """
 
@@ -61,7 +65,7 @@ def main():
     regName = []
     PC = 0
     regNameInit(regName)
-    regval = [0]*26 #0-23 and lo,hi
+    regval = [0]*26 #0-23 and lo, hi
     LO = 24
     HI = 25
     f = open("mc.txt","w+")
@@ -131,22 +135,43 @@ def main():
             line = line.replace("multu","")
             line = line.split(",")
             PC = PC + 4
+<<<<<<< HEAD
             regval[LO] = regval[int(line[0])]*regval[int(line[1])]
+=======
+            temp = regval[int(line[0])]*regval[int(line[1])]
+            templo = format(temp, '064b')
+            templo = temp & 0x0000FFFF
+            temphi = temp >> 32
+            regval[LO] = int(templo)
+            regval[HI] = int(temphi)
+>>>>>>> master
             f.write('Operation: $LO' + ' = ' + '$' + line[0] + ' * $' + line[1] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '\n')
+            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '$HI = ' + str(regval[HI]) + '\n')
             
         #mult
         elif(line[0:4] == "mult"): # $LO = $s * $t; advance_pc (4); mult $s, $t
             line = line.replace("mult","")
             line = line.split(",")
-            PC = PC + 4;
-            regval[LO] = regval[int(line[0])]*regval[int(line[1])]
+            PC = PC + 4
+            temp = regval[int(line[0])]*regval[int(line[1])]
+            templo = format(temp, '064b')
+            templo = temp & 0x0000FFFF
+            temphi = temp >> 32
+            regval[LO] = int(templo)
+            regval[HI] = int(temphi)
             f.write('Operation: $LO' + ' = ' + '$' + line[0] + ' * $' + line[1] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
+<<<<<<< HEAD
             f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '\n')
 
         #srl
+=======
+            f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + '$HI = ' + str(regval[HI]) + '\n')
+            
+
+                #srl
+>>>>>>> master
         elif(line[0:3] == "srl"): # $d = $t >> h; advance_pc (4); srl $d, $t, h
             line = line.replace("srl","")
             line = line.split(",")
@@ -265,6 +290,7 @@ def main():
         	line = line.split(",")
         	PC = PC + 4
             
+<<<<<<< HEAD
         	regval[int(line[1])] = format(regval[int(line[2])] | regval[int(line[0])])
         	temp_val = format( int(regval[int(line[1])]),'032b')
 
@@ -289,6 +315,8 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
             
+=======
+>>>>>>> master
         elif(line[0:1] == "j"): # JUMP
             #import pdb; pdb.set_trace()
             line = line.replace("j","")
