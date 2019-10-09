@@ -113,15 +113,16 @@ Registers that have changed: $8 = 0
 ------------------------------ 
 MIPS Instruction: bne $8, $0, loop
 
+No Registers have changed. 
 ------------------------------ 
-MIPS Instruction: mult $8, $9
+MIPS Instruction: beq $8, $0, end
 
-Operation: $LO = $8 * $9; 
-PC is now at 68
-Registers that have changed: $LO = 0$HI = 0
+PC is now at 84
+No Registers have changed. 
 ------------------------------ 
-MIPS Instruction: multu $8, $9
+------------------------------ 
+MIPS Instruction: addi $9, $0, 100
 
-Operation: $LO = $8 * $9; 
-PC is now at 72
-Registers that have changed: $LO = 0$HI = 0
+Operation: $9 = $0 + 100; 
+PC is now at 88
+Registers that have changed: $9 = 100

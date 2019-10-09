@@ -18,8 +18,14 @@ addi $8, $0, 3
 loop:
 addi $8, $8, -1
 bne $8, $0, loop
+
+
+beq $8, $0, end
+
 mult $8, $9
 multu $8, $9
+end:
+addi $9, $0, 100
 
 
 

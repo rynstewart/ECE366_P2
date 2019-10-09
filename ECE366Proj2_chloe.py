@@ -241,24 +241,6 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n') 
 
-        #bne
-        elif(line[0:3] == "bne"): # BNE
-            line = line.replace("bne","")
-            line = line.split(",")
-            if(regval[int(line[0])]!=regval[int(line[1])]):
-                if(line[2].isdigit()): # First,test to see if it's a label or a integer
-                    PC = line[2]
-                    lineCount = line[2]
-                    f.write('PC is now at ' + str(line[2]) + '\n')
-                else: # Jumping to label
-                    for i in range(len(labelName)):
-                        if(labelName[i] == line[2]):
-                            PC = labelAddr[i]
-                            lineCount = labelIndex[i]
-                            f.write('PC is now at ' + str(labelAddr[i]) + '\n')       
-                f.write('No Registers have changed. \n')
-                continue
-
         #sltu
         elif(line[0:4] == "sltu"): # ADD
             line = line.replace("sltu","")
@@ -277,7 +259,45 @@ def main():
             rt = format(int(line[2]),'05b')
             f.write(str('000000') + str(rs) + str(rt) + str(rd) + str('00000101010') + '\n')
             
-            
+        #bne
+        elif(line[0:3] == "bne"): # BNE
+            line = line.replace("bne","")
+            line = line.split(",")
+            if(regval[int(line[0])]!=regval[int(line[1])]):
+                if(line[2].isdigit()): # First,test to see if it's a label or a integer
+                    PC = line[2]
+                    lineCount = line[2]
+                    f.write('PC is now at ' + str(line[2]) + '\n')
+                else: # Jumping to label
+                    for i in range(len(labelName)):
+                        if(labelName[i] == line[2]):
+                            PC = labelAddr[i]
+                            lineCount = labelIndex[i]
+                            f.write('PC is now at ' + str(labelAddr[i]) + '\n')       
+                f.write('No Registers have changed. \n')
+                continue
+            f.write('No Registers have changed. \n')
+
+        #beq
+        elif(line[0:3] == "beq"): # Beq
+            line = line.replace("beq","")
+            line = line.split(",")
+            if(regval[int(line[0])]==regval[int(line[1])]):
+                if(line[2].isdigit()): # First,test to see if it's a label or a integer
+                    PC = line[2]
+                    lineCount = line[2]
+                    f.write('PC is now at ' + str(line[2]) + '\n')
+                else: # Jumping to label
+                    for i in range(len(labelName)):
+                        if(labelName[i] == line[2]):
+                            PC = labelAddr[i]
+                            lineCount = labelIndex[i]
+                            f.write('PC is now at ' + str(labelAddr[i]) + '\n')       
+                f.write('No Registers have changed. \n')
+                continue
+            f.write('No Registers have changed. \n')
+
+
         elif(line[0:1] == "j"): # JUMP
             #import pdb; pdb.set_trace()
             line = line.replace("j","")
