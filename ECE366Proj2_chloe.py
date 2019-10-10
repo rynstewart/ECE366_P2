@@ -187,7 +187,7 @@ def main():
             line = line.replace("addu","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = regval[int(line[1])] + regval[int(line[2])]
+            regval[int(line[0])] = abs(regval[int(line[1])]) + abs(regval[int(line[2])])
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + '$' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
