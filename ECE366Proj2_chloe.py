@@ -112,7 +112,10 @@ def hash(B, MEM):
             #place in memory incremented by one
     
     #storing max and pattern match
-    MEM[0x2000] = max_Addr
+    max_Addrlo = max_Addr >> 8
+    max_Addrhi = max_Addr & 0x00FF
+    MEM[0x2001] = max_Addrlo
+    MEM[0x2000] = max_Addrhi
     MEM[0x2004] = max
     MEM[0x2008] = pattern_Num
     
@@ -431,15 +434,30 @@ def main():
             continue
         lineCount = lineCount + 1
     #print final results
-    print(hex(MEM[0x2000]))
-    print(hex(MEM[0x2004]))
-    print(hex(MEM[0x2008]))
-    for x in range(0x2023,0x2085,4): 
+    #print(hex(MEM[0x2000]))
+    #print(hex(MEM[0x2004]))
+    #print(hex(MEM[0x2008]))
+    print("Used memory values:\n")
+    print("            ", end="")
+    for x in range(0,8,1):
+        print("0x"+ format(x*4,"08x"), end=" ")
+    print("\n")
+    print("--------------------------------------------------------------------------------------------------",end="")
+    count = 0
+    print("\n")
+    for x in range(0x2003,0x20a0,4):
+        #import pdb; pdb.set_trace() 
+        if((x-0x3)%0x20==0):
+            print("0x"+format(x-0x3,"08x") + '|', end=" ")
         print("0x", end="")
         for y in range(0,4,1):
             #import pdb; pdb.set_trace()
             print(format(MEM[x-y], "02x"), end="")
         print(" ", end = "")
+        count += 1
+        if(count == 8):
+            count = 0
+            print("\n")
 
     f.close()
 
