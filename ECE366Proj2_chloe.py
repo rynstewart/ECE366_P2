@@ -53,71 +53,58 @@ def rshift(val, n):
         return i
     """
 
-def hash(B, MEM):
-    A = 0x01
-    max = 0
-    max_Addr = 0
-    pattern_Num = 0
-    for A in range(0x65):
-        #first fold (down to 32 bits)
-        C = B*A
-        C_hi = C >> 32
-        C_low = C & 0x00000000FFFFFFFF
-        C = C_hi^C_low
-        
-        #Second fold (down to 16 bits)
-        C = B*C
-        C_hi = C >> 32
-        C_low = C & 0x00000000FFFFFFFF
-        C = C_hi^C_low
-
-        #third fold
-        C = B*C
-        C_hi = C >> 32
-        C_low = C & 0x00000000FFFFFFFF
-        C = C_hi^C_low
-
-        #fourth fold
-        C = B*C
-        C_hi = C >> 32
-        C_low = C & 0x00000000FFFFFFFF
-        C = C_hi^C_low
-
-        #fifth fold
-        C = B*C
-        C_hi = C >> 32
-        C_low = C & 0x00000000FFFFFFFF
-        C = C_hi^C_low
-
-        #Down to 16 bits
-        C_hi = C >> 16
-        C_low = C & 0x0000FFFF
-        C = C_hi^C_low
-
-        #Down to 8 bits
-        C_hi = C >> 8
-        C_low = C & 0x00FF
-        C = C_hi^C_low
-
-        MEM[0x2020 + (A - 1)] = C
-
-        #find max
-        if(max < C):
-            max = C
-            max_Addr = 0x2020 + (A - 1)
-
-        #pattern match
-        if('11111' in str(bin(C))):
-            pattern_Num += 1
-            #place in memory incremented by one
+def hash(A,B,pattern_Reg, MEM, regval):
+    #first fold (down to 32 bits)
+    C = B*A
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
     
-    #storing max and pattern match
-    max_Addrlo = max_Addr >> 8
-    max_Addrhi = max_Addr & 0x00FF
-    MEM[0x2001] = max_Addrlo
-    MEM[0x2000] = max_Addrhi
-    MEM[0x2004] = max
-    MEM[0x2008] = pattern_Num
+    #Second fold (down to 16 bits)
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #third fold
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #fourth fold
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #fifth fold
+    C = B*C
+    C_hi = C >> 32
+    C_low = C & 0x00000000FFFFFFFF
+    C = C_hi^C_low
+
+    #Down to 16 bits
+    C_hi = C >> 16
+    C_low = C & 0x0000FFFF
+    C = C_hi^C_low
+
+    #Down to 8 bits
+    C_hi = C >> 8
+    C_low = C & 0x00FF
+    C = C_hi^C_low
+
+    MEM[0x2020 + (A - 1)] = C
+
+    #pattern match
+    if('11111' in str(bin(C))):
+        regval[pattern_Reg] += 1
+        print(regval[pattern_Reg])
+        #place in memory incremented by one
+
+    if(A == 100):
+        MEM[0x2008] = regval[pattern_Reg]
+
     
 
 
@@ -340,7 +327,7 @@ def main():
             line = line.split(",")
             PC = PC + 4
 
-            regval[int(line[1])] = int(line[2], 16) and regval[int(line[0])]
+            regval[int(line[1])] = int(line[2], 16) & regval[int(line[0])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             f.write('Operation: $' + line[1] + '= $' + line[0] + "&"  + line[2])
@@ -351,7 +338,7 @@ def main():
             line = line.replace("ori", "")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[1])] = int(line[2], 16) or regval[int(line[0])]
+            regval[int(line[1])] = int(line[2], 16) | regval[int(line[0])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             # __, 0, 1, 2
@@ -363,11 +350,14 @@ def main():
             f.write('Registers that have changed: ' + '$' + str( int(line[2],16) ) + '=' + str(regval[int(line[0])]) + '\n')
 
         #hash
-        elif(line[0:4]=="proj1"):
-            line = line.replace("proj1","")
+        elif(line[0:4]=="func"):
+            line = line.replace("func","")
             line = line.split(",")
-            B = int(line[0], 16)
-            hash(B, MEM)
+            A = regval[int(line[0])]
+            pattern_Reg = int(line[1])
+            B = int(line[2], 16)
+            #import pdb; pdb.set_trace()
+            hash(A, B, pattern_Reg, MEM, regval)
             print("hash function")
 
 
@@ -376,6 +366,7 @@ def main():
             line = line.replace("bne","")
             line = line.split(",")
             if(regval[int(line[0])]!=regval[int(line[1])]):
+                #import pdb; pdb.set_trace()
                 if(line[2].isdigit()): # First,test to see if it's a label or a integer
                     PC = line[2]
                     lineCount = line[2]
