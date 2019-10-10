@@ -363,19 +363,9 @@ def main():
         elif(line[0:4]=="hash"):
             line = line.replace("hash","")
             line = line.split(",")
-            format(line[0]‬)
-            B = int(line[0], 100000000000)
+            B = int(line[0], 16)
             hash(B, MEM)
             print("hash function")
-            print(hex(MEM[0x2000]))
-            print(hex(MEM[0x2004]))
-            print(hex(MEM[0x2008]))
-            for x in range(0x2023,0x2085,4): 
-                #print("0x", end="")
-                for y in range(0,4,1):
-                    #import pdb; pdb.set_trace()
-                    print(format(MEM[x-y], "02x"), end="")
-                print(" ", end = "")
 
 
         #bne
@@ -440,6 +430,17 @@ def main():
             f.write('No Registers have changed. \n')
             continue
         lineCount = lineCount + 1
+    #print final results
+    print(hex(MEM[0x2000]))
+    print(hex(MEM[0x2004]))
+    print(hex(MEM[0x2008]))
+    for x in range(0x2023,0x2085,4): 
+        print("0x", end="")
+        for y in range(0,4,1):
+            #import pdb; pdb.set_trace()
+            print(format(MEM[x-y], "02x"), end="")
+        print(" ", end = "")
+
     f.close()
 
 if __name__ == "__main__":
