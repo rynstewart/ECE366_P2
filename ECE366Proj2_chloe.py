@@ -276,38 +276,48 @@ def main():
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
-
-        #bne
-        elif(line[0:3] == "bne"): # ADD
-            line = line.replace("bne","")
-            line = line.split(",")
-            rs = format(int(line[1]),'05b')
-            rt = format(int(line[0]),'05b')
-            if(line[2].isdigit()): # First,test to see if it's a label or a integer
-                f.write(str('000101') + str(rs) + str(rt) + str(format(int(line[2]),'016b')) + '\n')
-
-            else: # Jumping to label
-                for i in range(len(labelName)):
-                    if(labelName[i] == line[2]):
-                        f.write(str('000101') + str(rs) + str(rt) + str(format(int(labelIndex[i]),'016b')) + '\n')
-
-        #sltu
-        elif(line[0:4] == "sltu"): # ADD
-            line = line.replace("sltu","")
-            line = line.split(",")
-            rd = format(int(line[0]),'05b')
-            rs = format(int(line[1]),'05b')
-            rt = format(int(line[2]),'05b')
-            f.write(str('000000') + str(rs) + str(rt) + str(rd) + str('00000101011') + '\n')
            
         #slt
         elif(line[0:3] == "slt"): # ADD
             line = line.replace("slt","")
             line = line.split(",")
-            rd = format(int(line[0]),'05b')
-            rs = format(int(line[1]),'05b')
-            rt = format(int(line[2]),'05b')
-            f.write(str('000000') + str(rs) + str(rt) + str(rd) + str('00000101010') + '\n')
+           
+            if(line[1] < line[2]):
+                regval[int(line[0])] = 1
+            else:
+                regval[int(line[0])] = 0
+
+            PC = PC + 4
+            f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' < $' + line[2] + '? 1 : 0 ' + '\n')
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[ int(line[0]) ]) + '\n') 
+        
+        elif(line[0:4] == "andi"):
+            line = line.replace("andi", "")
+            line = line.split(",")
+            PC = PC + 4
+
+            regval[int(line[1])] = format(regval[int(line[2])] & regval[int(line[0])])
+            temp_val = format( int(regval[int(line[1])]),'032b')
+
+            f.write('Operation: $' + line[1] + '= $' + line[0] + "&"  + line[2])
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
+
+        elif(line[0:3] == "ori"):
+            line = line.replace("ori", "")
+            line = line.split(",")
+            PC = PC + 4
+            regval[int(line[1])] = format(regval[int(line[2])] | regval[int(line[0])])
+            temp_val = format( int(regval[int(line[1])]),'032b')
+
+            # __, 0, 1, 2
+            #op, rs, rt, imm
+            #6, 5, 5, 16
+            #rt = rs | imm()
+            f.write('Operation: $' + line[1] + '= $' + line[0] + "|"  + line[2])
+            f.write('PC is now at ' + str(PC) + '\n')
+            f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
             
         #bne
         elif(line[0:3] == "bne"): # BNE
