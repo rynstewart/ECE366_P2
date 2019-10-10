@@ -53,7 +53,7 @@ def rshift(val, n):
         return i
     """
 
-def hash(B, A, max):
+def hash(B, A, max, MEM):
 
     #first fold (down to 32 bits)
     C = B*A
@@ -95,10 +95,15 @@ def hash(B, A, max):
     C_low = C & 0x00FF
     C = C_hi^C_low
 
+    MEM[0x2020 + (A - 1)] = C
+
     if(max < C): 
         max = C
+        MEM[0x2000] = 0x2020 + (A - 1)
+        MEM[0x2004] = max
 
-    if(0x1F in C):
+    if(str(0x1F) in str(C)):
+        MEM[0x2008] = MEM[0x2008] + 1
         #place in memory incremented by one
 
 
@@ -115,8 +120,24 @@ def main():
     regval = [0]*26 #0-23 and lo, hi
     LO = 24
     HI = 25
+    good_in = False
+    while(good_in == False):
+        file_Name = input("Please type file name, enter for default, or q to quit:")
+        if(file_Name == "q"):
+           print("Bye!")
+           return
+        if(file_Name == "\n"):
+            file_Name = "mips1.asm"
+        try:
+            f = open(file_Name)
+            f.close()
+            good_in = True
+        except FileNotFoundError:
+            print('File does not exist')
+    
     f = open("mc.txt","w+")
-    h = open("mips1.asm","r")
+    h = open(file_Name,"r")
+
     asm = h.readlines()
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
         asm.remove('\n')
@@ -280,7 +301,7 @@ def main():
             line = line.split(",")
             PC = PC + 4
             MEM[regval[int(line[2])]+int(line[1])] = format(int(line[0]),'08b')
-            MEM[regval(int(line[2])))+int(line[1])] = int(MEM[regval[int(line[2])]+int(line[1])])
+            MEM[regval(int(line[2]))+int(line[1])] = int(MEM[regval[int(line[2])]+int(line[1])])
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
@@ -326,7 +347,24 @@ def main():
             f.write('Operation: $' + line[1] + '= $' + line[0] + "|"  + line[2])
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
-            
+
+        #hash
+        elif(line[0:4]=="hash"):
+            line = line.replace("hash","")
+            line = line.split(",")
+            B = 0xFA19E366 #int(line[0])
+            A = 0x01
+            max = 0
+            for A in range(0x65):
+                hash(B, A, max, MEM)
+            print("hash function")
+            x = 0x2000
+            for x in range(0x3000): 
+                print(hex(MEM[x]), end=" ")
+                if(x%64 == 0):
+                    print("")
+
+
         #bne
         elif(line[0:3] == "bne"): # BNE
             line = line.replace("bne","")
@@ -346,15 +384,6 @@ def main():
                 continue
             f.write('No Registers have changed. \n')
         
-        #hash
-        elif(line[0:4]==hash):
-            line = line.replace("beq","")
-            line = line.split(",")
-            B = 0xFA19E366#int(line[0])
-            A = 0x01
-            max = 0
-            for(A in range(0x65)):
-                hash(B, A, max)
 
         #beq
         elif(line[0:3] == "beq"): # Beq
