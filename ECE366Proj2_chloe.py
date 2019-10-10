@@ -53,58 +53,69 @@ def rshift(val, n):
         return i
     """
 
-def hash(B, A, max, MEM):
+def hash(B, MEM):
+    A = 0x01
+    max = 0
+    max_Addr = 0
+    pattern_Num = 0
+    for A in range(0x65):
+        #first fold (down to 32 bits)
+        C = B*A
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
+        
+        #Second fold (down to 16 bits)
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
 
-    #first fold (down to 32 bits)
-    C = B*A
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
+        #third fold
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
+
+        #fourth fold
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
+
+        #fifth fold
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
+
+        #Down to 16 bits
+        C_hi = C >> 16
+        C_low = C & 0x0000FFFF
+        C = C_hi^C_low
+
+        #Down to 8 bits
+        C_hi = C >> 8
+        C_low = C & 0x00FF
+        C = C_hi^C_low
+
+        MEM[0x2020 + (A - 1)] = C
+
+        #find max
+        if(max < C):
+            max = C
+            max_Addr = 0x2020 + (A - 1)
+
+        #pattern match
+        if('11111' in str(bin(C))):
+            pattern_Num += 1
+            #place in memory incremented by one
     
-    #Second fold (down to 16 bits)
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
-
-    #third fold
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
-
-    #fourth fold
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
-
-    #fifth fold
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
-
-    #Down to 16 bits
-    C_hi = C >> 16
-    C_low = C & 0x0000FFFF
-    C = C_hi^C_low
-
-    #Down to 8 bits
-    C_hi = C >> 8
-    C_low = C & 0x00FF
-    C = C_hi^C_low
-
-    MEM[0x2020 + (A - 1)] = C
-
-    if(max < C):
-        max = C
-        MEM[0x2000] = 0x2020 + (A - 1)
-        MEM[0x2004] = max
-
-    if('11111' in str(bin(C))):
-        MEM[0x2008] = MEM[0x2008] + 1
-        #place in memory incremented by one
+    #storing max and pattern match
+    MEM[0x2000] = max_Addr
+    MEM[0x2004] = max
+    MEM[0x2008] = pattern_Num
+    
 
 
 
@@ -352,11 +363,9 @@ def main():
         elif(line[0:4]=="hash"):
             line = line.replace("hash","")
             line = line.split(",")
-            B = 0xFA19E366 #int(line[0])
-            A = 0x01
-            for A in range(0x65):
-                max = MEM[0x2004]
-                hash(B, A, max, MEM)
+            format(line[0]‬)
+            B = int(line[0], 100000000000)
+            hash(B, MEM)
             print("hash function")
             print(hex(MEM[0x2000]))
             print(hex(MEM[0x2004]))
