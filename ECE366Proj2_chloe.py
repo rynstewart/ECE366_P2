@@ -86,12 +86,12 @@ def hash(B, A, max, MEM):
     C = C_hi^C_low
 
     #Down to 16 bits
-    C_hi = C << 16
+    C_hi = C >> 16
     C_low = C & 0x0000FFFF
     C = C_hi^C_low
 
     #Down to 8 bits
-    C_hi = C << 8
+    C_hi = C >> 8
     C_low = C & 0x00FF
     C = C_hi^C_low
 
@@ -358,9 +358,16 @@ def main():
             for A in range(0x65):
                 hash(B, A, max, MEM)
             print("hash function")
-            x = 0x2000
-            for x in range(0x3000): 
-                print(hex(MEM[x]), end=" ")
+            print(MEM[0x2000])
+            print(MEM[0x2004])
+            print(MEM[0x2008])
+            for x in range(0x2020,0x2030,1): 
+                #print("0x", end="")
+                for y in range(3,0,-1):
+                    #import pdb; pdb.set_trace()
+                    print(format(MEM[x+y], "02x") + " at addr: " + hex(x+y), end=" ")
+
+                #print('0x' + format(MEM[x], "08x"), end=" ")
                 if(x%64 == 0):
                     print("")
 
