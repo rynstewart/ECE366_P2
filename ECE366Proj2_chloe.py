@@ -97,12 +97,12 @@ def hash(B, A, max, MEM):
 
     MEM[0x2020 + (A - 1)] = C
 
-    if(max < C): 
+    if(max < C):
         max = C
         MEM[0x2000] = 0x2020 + (A - 1)
         MEM[0x2004] = max
 
-    if(str(0x1F) in str(C)):
+    if('11111' in str(bin(C))):
         MEM[0x2008] = MEM[0x2008] + 1
         #place in memory incremented by one
 
@@ -354,22 +354,19 @@ def main():
             line = line.split(",")
             B = 0xFA19E366 #int(line[0])
             A = 0x01
-            max = 0
             for A in range(0x65):
+                max = MEM[0x2004]
                 hash(B, A, max, MEM)
             print("hash function")
-            print(MEM[0x2000])
-            print(MEM[0x2004])
-            print(MEM[0x2008])
-            for x in range(0x2020,0x2030,1): 
+            print(hex(MEM[0x2000]))
+            print(hex(MEM[0x2004]))
+            print(hex(MEM[0x2008]))
+            for x in range(0x2023,0x2085,4): 
                 #print("0x", end="")
-                for y in range(3,0,-1):
+                for y in range(0,4,1):
                     #import pdb; pdb.set_trace()
-                    print(format(MEM[x+y], "02x") + " at addr: " + hex(x+y), end=" ")
-
-                #print('0x' + format(MEM[x], "08x"), end=" ")
-                if(x%64 == 0):
-                    print("")
+                    print(format(MEM[x-y], "02x"), end="")
+                print(" ", end = "")
 
 
         #bne

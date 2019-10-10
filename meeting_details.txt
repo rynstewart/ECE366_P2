@@ -22,6 +22,6 @@ implemented instructions on python including addiu, addi, add, xor, multu, mult,
 
 Ryn Work:
 
-implemented j on python
+implemented j, bne, beq, addu, special instruction (hash). Started printing array. 
 
 Fabian Work:
