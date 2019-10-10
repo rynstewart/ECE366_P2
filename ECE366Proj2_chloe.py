@@ -437,10 +437,21 @@ def main():
     #print(hex(MEM[0x2000]))
     #print(hex(MEM[0x2004]))
     #print(hex(MEM[0x2008]))
-    print("Used memory values:\n")
+    print("REGISTERS:")
+    print("-----------")
+    for x in range(len(regval)):
+        if(x == 24):
+            print("%-21s %4d" % ("lo: ", regval[x]))
+        elif(x == 25):
+            print("%-21s %4d" % ("hi: ", regval[x]))
+        else:
+            print("$", x,":"+ "%-15s %4d" % (" ", regval[x]))
+
+    print("\n")
+    print("Used Memory values:\n")
     print("            ", end="")
     for x in range(0,8,1):
-        print("0x"+ format(x*4,"08x"), end=" ")
+        print("0x"+ format((x*4),"08x"), end=" ")
     print("\n")
     print("--------------------------------------------------------------------------------------------------",end="")
     count = 0
