@@ -2,8 +2,17 @@
                        
 #####instructions we still need######
 """
-lui, ori, slt, andi, addu
-special instruction (hash)
+lui, ori, mfhi, mflo, slt
+andi, bne
+special instruction
+
+
+
+slt - DONE
+mfhi, mflo - needs mult rework
+ori - DONE
+bne - 
+lui - 
    
 """
 
@@ -121,7 +130,6 @@ def main():
     while(lineCount < len(asm)):
 
         line = asm[lineCount]
-        #import pdb; pdb.set_trace()
         f.write('------------------------------ \n')
         if(not(':' in line)):
             f.write('MIPS Instruction: ' + line + '\n')
