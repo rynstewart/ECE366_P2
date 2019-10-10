@@ -183,7 +183,7 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
 
-        if(line[0:5] == "addu"): # $t = $s + imm; advance_pc (4); addiu $t, $s, imm
+        if(line[0:4] == "addu"): # $t = $s + imm; advance_pc (4); addiu $t, $s, imm
             line = line.replace("addu","")
             line = line.split(",")
             PC = PC + 4
@@ -301,7 +301,7 @@ def main():
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
+            regval[int(line[0])] = MEM[regval[int(line[1])]+int(line[2],16)]#format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
             regval[int(line[0])] = abs((int(regval[int(line[0])])))
             f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -315,7 +315,7 @@ def main():
             line = line.split(",")
             PC = PC + 4
             MEM[regval[int(line[2])]+int(line[1])] = format(int(line[0]),'08b')
-            MEM[regval(int(line[2]))+int(line[1])] = int(MEM[regval[int(line[2])]+int(line[1])])
+            MEM[regval[int(line[2])]+int(line[1],16)] = regval[int(line[0])]
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
@@ -340,18 +340,18 @@ def main():
             line = line.split(",")
             PC = PC + 4
 
-            regval[int(line[1])] = format(regval[int(line[2])] & regval[int(line[0])])
+            regval[int(line[1])] = int(line[2], 16) and regval[int(line[0])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             f.write('Operation: $' + line[1] + '= $' + line[0] + "&"  + line[2])
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
+            f.write('Registers that have changed: ' + '$' + str( int(line[2],16) ) + '=' + str(regval[int(line[0])]) + '\n')
 
         elif(line[0:3] == "ori"):
             line = line.replace("ori", "")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[1])] = format(regval[int(line[2])] | regval[int(line[0])])
+            regval[int(line[1])] = int(line[2], 16) or regval[int(line[0])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             # __, 0, 1, 2
@@ -360,11 +360,11 @@ def main():
             #rt = rs | imm()
             f.write('Operation: $' + line[1] + '= $' + line[0] + "|"  + line[2])
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
+            f.write('Registers that have changed: ' + '$' + str( int(line[2],16) ) + '=' + str(regval[int(line[0])]) + '\n')
 
         #hash
-        elif(line[0:4]=="hash"):
-            line = line.replace("hash","")
+        elif(line[0:4]=="proj1"):
+            line = line.replace("proj1","")
             line = line.split(",")
             B = int(line[0], 16)
             hash(B, MEM)
