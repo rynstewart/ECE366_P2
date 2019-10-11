@@ -1,0 +1,65 @@
+------------------------------ 
+MIPS Instruction: lui $8, 0xFA19
+
+Operation: $8 = (0xFA19 << 16); 
+PC is now at 4
+Registers that have changed: $8 = 0xFA19
+------------------------------ 
+MIPS Instruction: ori $8, $8, 0xE366
+
+------------------------------ 
+MIPS Instruction: addiu $9, $0, 1
+
+Operation: $9 = $0 + 1; 
+PC is now at 8
+Registers that have changed: $9 = 1
+------------------------------ 
+MIPS Instruction: addiu $11, $0, 101
+
+Operation: $11 = $0 + 101; 
+PC is now at 12
+Registers that have changed: $11 = 257
+------------------------------ 
+MIPS Instruction: addiu $15, $0, 0x2020
+
+Operation: $15 = $0 + 0x2020; 
+PC is now at 16
+Registers that have changed: $15 = 8224
+------------------------------ 
+MIPS Instruction: addiu $16, $0, 100
+
+Operation: $16 = $0 + 100; 
+PC is now at 20
+Registers that have changed: $16 = 256
+------------------------------ 
+MIPS Instruction: addiu $17, $0, 1
+
+Operation: $17 = $0 + 1; 
+PC is now at 24
+Registers that have changed: $17 = 1
+------------------------------ 
+MIPS Instruction: addiu $18, $0, 0x21e0
+
+Operation: $18 = $0 + 0x21e0; 
+PC is now at 28
+Registers that have changed: $18 = 8672
+------------------------------ 
+MIPS Instruction: #addi $19, $0, 0xFFFF
+
+------------------------------ 
+------------------------------ 
+MIPS Instruction: multu $9, $8
+
+Operation: $LO = $9 * $8; 
+PC is now at 32
+Registers that have changed: $LO = 64025, $HI = 0
+------------------------------ 
+MIPS Instruction: mfhi $12
+
+Operation: $12 = $HI; 
+PC is now at 36
+ Instruction: lb $13, 0 ($8)
+
+------------------------------ 
+MIPS Instruction: sb $13, 1 ($14)
+
