@@ -200,6 +200,8 @@ def main():
             line = line.split(",")
             PC = PC + 4
             regval[int(line[0])] = int(line[1],16)
+            regval[int(line[0])] = regval[int(line[0])] << 16 
+
             f.write('Operation: $' + line[0] + ' = ' + '(' + line[1] + ' << 16); ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + line[1] + '\n')            
@@ -213,9 +215,8 @@ def main():
             templo = format(temp, '064b')
             templo = temp & 0x00000000FFFFFFFF
             temphi = temp >> 32
-            import pdb; pdb.set_trace()
-            regval[LO] = int(templo,16)
-            regval[HI] = int(temphi,16)
+            regval[LO] = int(templo)
+            regval[HI] = int(temphi)
             f.write('Operation: $LO' + ' = ' + '$' + line[0] + ' * $' + line[1] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + ', $HI = ' + str(regval[HI]) + '\n')
@@ -267,13 +268,14 @@ def main():
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')            
             
             
-        elif(line[0:2] == "lbu"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
+        elif(line[0:3] == "lbu"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
             line = line.replace("lbu","")
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = MEM[regval[int(line[1])]+int(line[2],16)]#format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
+            #import pdb; pdb.set_trace()
+            regval[int(line[0])] = MEM[regval[int(line[2])]+int(line[1],16)]#format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
             regval[int(line[0])] = abs((int(regval[int(line[0])])))
             f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -322,7 +324,7 @@ def main():
             line = line.replace("ori", "")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[1])] = int(line[2], 16) | regval[int(line[0])]
+            regval[int(line[1])] = int(line[2],16) | regval[int(line[0])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             # __, 0, 1, 2
