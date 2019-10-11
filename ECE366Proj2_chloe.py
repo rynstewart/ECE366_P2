@@ -284,13 +284,14 @@ def main():
          
         #sb
         elif(line[0:2] == "sb"): # MEM[$s + offset] = (0xff & $t); advance_pc (4); sb $t, offset($s)
+            #import pdb; pdb.set_trace()
             line = line.replace("sb","")
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            X = format(regval[int(line[0])],'08b')
-            MEM[regval[int(line[2])]+int(line[1],16)] = int(X,2)
+            X = regval[int(line[0])]#format(regval[int(line[0])],'08b')
+            MEM[regval[int(line[2])]+int(line[1],16)] = X
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')

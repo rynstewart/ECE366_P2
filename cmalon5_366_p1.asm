@@ -1,7 +1,7 @@
 lui $8, 0xFA19
 ori $8, $8, 0xE366
 addiu $9, $0, 1
-addiu $11, $0, 5
+addiu $11, $0, 0x65
 addiu $15, $0, 0x2020
 addiu $16, $0, 100
 addiu $17, $0, 1
@@ -75,7 +75,7 @@ lbu $12, 0($9)
 shift:
 andi $13, $12, 0x1F
 bne $13, $10, pattern_match_cont
-j adding
+j sum
 
 pattern_match_cont:
 
@@ -84,7 +84,7 @@ addiu $18, $18, 1
 bne $17, $18, shift
 j next
 
-adding:
+sum:
 
 addiu $14, $14, 1
 sb $14, 0($11)
