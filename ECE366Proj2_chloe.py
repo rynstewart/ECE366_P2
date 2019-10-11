@@ -1,20 +1,6 @@
             
                        
 #####instructions we still need######
-"""
-lui, ori, mfhi, mflo, slt
-andi, bne
-special instruction
-
-
-
-slt - DONE
-mfhi, mflo - needs mult rework
-ori - DONE
-bne - 
-lui - 
-   
-"""
 
 
 def saveJumpLabel(asm,labelIndex, labelName, labelAddr):
@@ -99,7 +85,6 @@ def hash(A,B,pattern_Reg, MEM, regval):
     #pattern match
     if('11111' in str(bin(C))):
         regval[pattern_Reg] += 1
-        print(regval[pattern_Reg])
         #place in memory incremented by one
 
     if(A == 100):
@@ -155,7 +140,6 @@ def main():
         f.write('------------------------------ \n')
         if(not(':' in line)):
             f.write('MIPS Instruction: ' + line + '\n')
-        
         line = line.replace("\n","") # Removes extra chars
         line = line.replace("$","")
         line = line.replace(" ","")
@@ -229,8 +213,9 @@ def main():
             templo = format(temp, '064b')
             templo = temp & 0x00000000FFFFFFFF
             temphi = temp >> 32
-            regval[LO] = int(templo)
-            regval[HI] = int(temphi)
+            import pdb; pdb.set_trace()
+            regval[LO] = int(templo,16)
+            regval[HI] = int(temphi,16)
             f.write('Operation: $LO' + ' = ' + '$' + line[0] + ' * $' + line[1] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$LO = ' + str(regval[LO]) + ', $HI = ' + str(regval[HI]) + '\n')
@@ -301,8 +286,8 @@ def main():
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            MEM[regval[int(line[2])]+int(line[1])] = format(int(line[0]),'08b')
-            MEM[regval[int(line[2])]+int(line[1],16)] = regval[int(line[0])]
+            X = format(regval[int(line[0])],'08b')
+            MEM[regval[int(line[2])]+int(line[1],16)] = int(X,2)
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
@@ -311,8 +296,7 @@ def main():
         elif(line[0:3] == "slt"): # ADD
             line = line.replace("slt","")
             line = line.split(",")
-           
-            if(line[1] < line[2]):
+            if(regval[int(line[1])] < regval[int(line[2])]):
                 regval[int(line[0])] = 1
             else:
                 regval[int(line[0])] = 0
@@ -356,10 +340,7 @@ def main():
             A = regval[int(line[0])]
             pattern_Reg = int(line[1])
             B = int(line[2], 16)
-            #import pdb; pdb.set_trace()
             hash(A, B, pattern_Reg, MEM, regval)
-            print("hash function")
-
 
         #bne
         elif(line[0:3] == "bne"): # BNE

@@ -50,7 +50,6 @@ addiu $9, $9, 1
 addiu $15, $15, 1
 bne $9, $11, hash
 
-
 addiu $9, $0, 0x2020
 addiu $10, $0, 0x2000
 addiu $15, $0, 0
