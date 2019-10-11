@@ -149,6 +149,7 @@ def main():
             line = line.replace("addiu","")
             line = line.split(",")
             PC = PC + 4
+            #import pdb; pdb.set_trace()
             regval[int(line[0])] = regval[int(line[1])] + int(line[2],16)
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -187,8 +188,8 @@ def main():
             line = line.split(",")
             PC = PC + 4
             #x = format(int(line[1]),'032b')^format(int(line[2]),'032b')
-            x = format(int(line[1]),'032b')
-            y = format(int(line[2]),'032b')
+            x = regval[int(line[1])]
+            y = regval[int(line[2])]
             z = int(x)^int(y)
             regval[int(line[0])] = z
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' ^ $' + line[2] + '; ' + '\n')
@@ -261,7 +262,7 @@ def main():
             line = line.replace("srl","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = rshift(-1, int(line[2]))
+            regval[int(line[0])] = regval[int(line[1])] >> int(line[2])#rshift(-1, int(line[2]))
             #regval[int(line[0])] = rshift(regval[int(line[1])], int(line[2]))
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' >> ' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -313,7 +314,7 @@ def main():
             line = line.split(",")
             PC = PC + 4
 
-            regval[int(line[1])] = int(line[2], 16) & regval[int(line[0])]
+            regval[int(line[0])] = int(line[2], 16) & regval[int(line[1])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             f.write('Operation: $' + line[1] + '= $' + line[0] + "&"  + line[2])
@@ -349,7 +350,6 @@ def main():
             line = line.replace("bne","")
             line = line.split(",")
             if(regval[int(line[0])]!=regval[int(line[1])]):
-                #import pdb; pdb.set_trace()
                 if(line[2].isdigit()): # First,test to see if it's a label or a integer
                     PC = line[2]
                     lineCount = line[2]

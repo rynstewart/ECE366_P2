@@ -1,7 +1,7 @@
 lui $8, 0xFA19
 ori $8, $8, 0xE366
 addiu $9, $0, 1
-addiu $11, $0, 101
+addiu $11, $0, 5
 addiu $15, $0, 0x2020
 addiu $16, $0, 100
 addiu $17, $0, 1
@@ -55,29 +55,6 @@ addiu $10, $0, 0x2000
 addiu $15, $0, 0
 addiu $16, $0, 100
 addiu $22, $0, 1
-
-find_max:
-
-slt $18, $16, $15
-bne $18, $0, done
-
-lbu $12, 0($9)
-lbu $13, 4($10)
-addu $11, $0, $9
-addiu  $9, $9, 1
-addiu $15, $15, 1
-slt $17, $13, $12
-bne $17, $0, store
-j find_max
-
-store:
-
-sb $12, 4($10)
-sb $11, 0($10)
-addu $20, $11, $0
-srl $20, $20, 8
-sb $20, 1($10)
-j find_max
 
 done:
 
