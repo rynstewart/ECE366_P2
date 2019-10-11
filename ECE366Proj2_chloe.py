@@ -130,8 +130,6 @@ def main():
 
     saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
 
-    #import pdb; pdb.set_trace()
-
     #for lineCount in len(asm):
     lineCount = 0
     while(lineCount < len(asm)):
@@ -149,7 +147,6 @@ def main():
             line = line.replace("addiu","")
             line = line.split(",")
             PC = PC + 4
-            #import pdb; pdb.set_trace()
             regval[int(line[0])] = regval[int(line[1])] + int(line[2],16)
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -213,7 +210,7 @@ def main():
             line = line.split(",")
             PC = PC + 4
             temp = regval[int(line[0])]*regval[int(line[1])]
-            templo = format(temp, '064b')
+            #templo = format(temp, '064b')
             templo = temp & 0x00000000FFFFFFFF
             temphi = temp >> 32
             regval[LO] = int(templo)
@@ -275,8 +272,7 @@ def main():
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            #import pdb; pdb.set_trace()
-            regval[int(line[0])] = MEM[regval[int(line[2])]+int(line[1],16)]#format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
+            regval[int(line[0])] = MEM[regval[int(line[2])]+int(line[1],16)] & 0x00FF#format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
             regval[int(line[0])] = abs((int(regval[int(line[0])])))
             f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -284,7 +280,6 @@ def main():
          
         #sb
         elif(line[0:2] == "sb"): # MEM[$s + offset] = (0xff & $t); advance_pc (4); sb $t, offset($s)
-            #import pdb; pdb.set_trace()
             line = line.replace("sb","")
             line = line.replace("(",",")
             line = line.replace(")","")
@@ -316,7 +311,7 @@ def main():
             PC = PC + 4
 
             regval[int(line[0])] = int(line[2], 16) & regval[int(line[1])]
-            temp_val = format( int(regval[int(line[1])]),'032b')
+            #temp_val = format( int(regval[int(line[1])]),'032b')
 
             f.write('Operation: $' + line[1] + '= $' + line[0] + "&"  + line[2])
             f.write('PC is now at ' + str(PC) + '\n')
@@ -387,7 +382,6 @@ def main():
 
 
         elif(line[0:1] == "j"): # JUMP
-            #import pdb; pdb.set_trace()
             line = line.replace("j","")
             line = line.split(",")
             f.write('Operation: PC = nPC; ' + '\n')
@@ -432,12 +426,10 @@ def main():
     count = 0
     print("\n")
     for x in range(0x2003,0x20a0,4):
-        #import pdb; pdb.set_trace() 
         if((x-0x3)%0x20==0):
             print("0x"+format(x-0x3,"08x") + '|', end=" ")
         print("0x", end="")
         for y in range(0,4,1):
-            #import pdb; pdb.set_trace()
             print(format(MEM[x-y], "02x"), end="")
         print(" ", end = "")
         count += 1
