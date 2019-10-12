@@ -404,15 +404,16 @@ def main():
     #print(hex(MEM[0x2000]))
     #print(hex(MEM[0x2004]))
     #print(hex(MEM[0x2008]))
-    print("REGISTERS:")
+    ("REGISTERS:")
     print("-----------")
     for x in range(len(regval)):
         if(x == 24):
-            print("%-21s %4d" % ("lo: ", regval[x]))
+            print("lo: ", hex(regval[x]))
         elif(x == 25):
-            print("%-21s %4d" % ("hi: ", regval[x]))
+            print("hi: ", hex(regval[x]))
         else:
-            print("$", x,":"+ "%-15s %4d" % (" ", regval[x]))
+            print("$", x,": ", hex(regval[x]))
+    print("PC: ", hex(PC))
 
     print("\n")
     print("Used Memory values:\n")
@@ -423,7 +424,7 @@ def main():
     print("--------------------------------------------------------------------------------------------------",end="")
     count = 0
     print("\n")
-    for x in range(0x2003,0x20a0,4):
+    for x in range(0x2003,0x2100,4):
         if((x-0x3)%0x20==0):
             print("0x"+format(x-0x3,"08x") + '|', end=" ")
         print("0x", end="")
