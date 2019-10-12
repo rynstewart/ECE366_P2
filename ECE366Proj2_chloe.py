@@ -40,58 +40,56 @@ def rshift(val, n):
     """
 
 def hash(A,B,pattern_Reg, MEM, regval):
-    #first fold (down to 32 bits)
-    C = B*A
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
     
-    #Second fold (down to 16 bits)
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
+    for x in range(0, 4, 1):
+        #first fold (down to 32 bits)
+        C = B*regval[A]
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
+        
+        #Second fold (down to 16 bits)
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
 
-    #third fold
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
+        #third fold
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
 
-    #fourth fold
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
+        #fourth fold
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
 
-    #fifth fold
-    C = B*C
-    C_hi = C >> 32
-    C_low = C & 0x00000000FFFFFFFF
-    C = C_hi^C_low
+        #fifth fold
+        C = B*C
+        C_hi = C >> 32
+        C_low = C & 0x00000000FFFFFFFF
+        C = C_hi^C_low
 
-    #Down to 16 bits
-    C_hi = C >> 16
-    C_low = C & 0x0000FFFF
-    C = C_hi^C_low
+        #Down to 16 bits
+        C_hi = C >> 16
+        C_low = C & 0x0000FFFF
+        C = C_hi^C_low
 
-    #Down to 8 bits
-    C_hi = C >> 8
-    C_low = C & 0x00FF
-    C = C_hi^C_low
+        #Down to 8 bits
+        C_hi = C >> 8
+        C_low = C & 0x00FF
+        C = C_hi^C_low
 
-    MEM[0x2020 + (A - 1)] = C
+        MEM[0x2020 + (regval[A] - 1)] = C
 
-    #pattern match
-    if('11111' in str(bin(C))):
-        regval[pattern_Reg] += 1
-        #place in memory incremented by one
+        regval[A] += 1
 
-    if(A == 100):
-        MEM[0x2008] = regval[pattern_Reg]
-
-    
-
+        #pattern match
+        if('11111' in str(bin(C))):
+            regval[pattern_Reg] += 1
+            #place in memory incremented by one
 
 
 def main():
@@ -289,7 +287,7 @@ def main():
             MEM[regval[int(line[2])]+int(line[1],16)] = X
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
+            f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1],16)) + ' = ' + str(regval[int(line[0])]) + ' \n')
            
         #slt
         elif(line[0:3] == "slt"): # ADD
@@ -336,8 +334,8 @@ def main():
         elif(line[0:4]=="func"):
             line = line.replace("func","")
             line = line.split(",")
-            A = regval[int(line[0])]
-            pattern_Reg = int(line[1])
+            A = int(line[1])
+            pattern_Reg = int(line[0])
             B = int(line[2], 16)
             hash(A, B, pattern_Reg, MEM, regval)
 
