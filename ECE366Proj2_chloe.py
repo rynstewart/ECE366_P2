@@ -1,20 +1,6 @@
             
                        
 #####instructions we still need######
-"""
-lui, ori, mfhi, mflo, slt
-andi, bne
-special instruction
-
-
-
-slt - DONE
-mfhi, mflo - needs mult rework
-ori - DONE
-bne - 
-lui - 
-   
-"""
 
 
 def saveJumpLabel(asm,labelIndex, labelName, labelAddr):
@@ -53,8 +39,7 @@ def rshift(val, n):
         return i
     """
 
-def hash(B, A, max):
-
+def hash(A,B,pattern_Reg, MEM, regval):
     #first fold (down to 32 bits)
     C = B*A
     C_hi = C >> 32
@@ -86,20 +71,26 @@ def hash(B, A, max):
     C = C_hi^C_low
 
     #Down to 16 bits
-    C_hi = C << 16
+    C_hi = C >> 16
     C_low = C & 0x0000FFFF
     C = C_hi^C_low
 
     #Down to 8 bits
-    C_hi = C << 8
+    C_hi = C >> 8
     C_low = C & 0x00FF
     C = C_hi^C_low
 
-    if(max < C): 
-        max = C
+    MEM[0x2020 + (A - 1)] = C
 
-    if(0x1F in C):
+    #pattern match
+    if('11111' in str(bin(C))):
+        regval[pattern_Reg] += 1
         #place in memory incremented by one
+
+    if(A == 100):
+        MEM[0x2008] = regval[pattern_Reg]
+
+    
 
 
 
@@ -115,15 +106,29 @@ def main():
     regval = [0]*26 #0-23 and lo, hi
     LO = 24
     HI = 25
+    good_in = False
+    while(good_in == False):
+        file_Name = input("Please type file name, enter for default, or q to quit:")
+        if(file_Name == "q"):
+           print("Bye!")
+           return
+        if(file_Name == "\n"):
+            file_Name = "mips1.asm"
+        try:
+            f = open(file_Name)
+            f.close()
+            good_in = True
+        except FileNotFoundError:
+            print('File does not exist')
+    
     f = open("mc.txt","w+")
-    h = open("mips1.asm","r")
+    h = open(file_Name,"r")
+
     asm = h.readlines()
     for item in range(asm.count('\n')): # Remove all empty lines '\n'
         asm.remove('\n')
 
     saveJumpLabel(asm,labelIndex,labelName, labelAddr) # Save all jump's destinations
-
-    #import pdb; pdb.set_trace()
 
     #for lineCount in len(asm):
     lineCount = 0
@@ -133,7 +138,6 @@ def main():
         f.write('------------------------------ \n')
         if(not(':' in line)):
             f.write('MIPS Instruction: ' + line + '\n')
-        
         line = line.replace("\n","") # Removes extra chars
         line = line.replace("$","")
         line = line.replace(" ","")
@@ -148,11 +152,11 @@ def main():
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
 
-        if(line[0:5] == "addu"): # $t = $s + imm; advance_pc (4); addiu $t, $s, imm
+        if(line[0:4] == "addu"): # $t = $s + imm; advance_pc (4); addiu $t, $s, imm
             line = line.replace("addu","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = regval[int(line[1])] + regval[int(line[2])]
+            regval[int(line[0])] = abs(regval[int(line[1])]) + abs(regval[int(line[2])])
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' + ' + '$' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')
@@ -181,8 +185,8 @@ def main():
             line = line.split(",")
             PC = PC + 4
             #x = format(int(line[1]),'032b')^format(int(line[2]),'032b')
-            x = format(int(line[1]),'032b')
-            y = format(int(line[2]),'032b')
+            x = regval[int(line[1])]
+            y = regval[int(line[2])]
             z = int(x)^int(y)
             regval[int(line[0])] = z
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' ^ $' + line[2] + '; ' + '\n')
@@ -194,6 +198,8 @@ def main():
             line = line.split(",")
             PC = PC + 4
             regval[int(line[0])] = int(line[1],16)
+            regval[int(line[0])] = regval[int(line[0])] << 16 
+
             f.write('Operation: $' + line[0] + ' = ' + '(' + line[1] + ' << 16); ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + line[1] + '\n')            
@@ -204,7 +210,7 @@ def main():
             line = line.split(",")
             PC = PC + 4
             temp = regval[int(line[0])]*regval[int(line[1])]
-            templo = format(temp, '064b')
+            #templo = format(temp, '064b')
             templo = temp & 0x00000000FFFFFFFF
             temphi = temp >> 32
             regval[LO] = int(templo)
@@ -253,20 +259,20 @@ def main():
             line = line.replace("srl","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = rshift(-1, int(line[2]))
+            regval[int(line[0])] = regval[int(line[1])] >> int(line[2])#rshift(-1, int(line[2]))
             #regval[int(line[0])] = rshift(regval[int(line[1])], int(line[2]))
             f.write('Operation: $' + line[0] + ' = ' + '$' + line[1] + ' >> ' + line[2] + '; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + line[0] + ' = ' + str(regval[int(line[0])]) + '\n')            
             
             
-        elif(line[0:2] == "lbu"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
+        elif(line[0:3] == "lbu"): # $t = MEM[$s + offset]; advance_pc (4); lb $t, offset($s)
             line = line.replace("lbu","")
             line = line.replace("(",",")
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[0])] = format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
+            regval[int(line[0])] = MEM[regval[int(line[2])]+int(line[1],16)] & 0x00FF#format(int(MEM[regval[int(line[1])]+int(line[2])]),'08b')
             regval[int(line[0])] = abs((int(regval[int(line[0])])))
             f.write('Operation: $' + line[0] + ' = ' + 'MEM[$' + line[2] + ' + ' + line[1] + ']; ' + '\n')
             f.write('PC is now at ' + str(PC) + '\n')
@@ -279,8 +285,8 @@ def main():
             line = line.replace(")","")
             line = line.split(",")
             PC = PC + 4
-            MEM[regval[int(line[2])]+int(line[1])] = format(int(line[0]),'08b')
-            MEM[regval(int(line[2])))+int(line[1])] = int(MEM[regval[int(line[2])]+int(line[1])])
+            X = regval[int(line[0])]#format(regval[int(line[0])],'08b')
+            MEM[regval[int(line[2])]+int(line[1],16)] = X
             f.write('Operation: MEM[$' + line[2] + ' + ' + line[1] + '] = ' + '$' + line[0] + '; \n')
             f.write('PC is now at ' + str(PC) + '\n')
             f.write('Registers that have changed: ' + '$' + str(int(line[2])+int(line[1])) + ' = ' + str(regval[int(line[0])]) + ' \n')
@@ -289,8 +295,7 @@ def main():
         elif(line[0:3] == "slt"): # ADD
             line = line.replace("slt","")
             line = line.split(",")
-           
-            if(line[1] < line[2]):
+            if(regval[int(line[1])] < regval[int(line[2])]):
                 regval[int(line[0])] = 1
             else:
                 regval[int(line[0])] = 0
@@ -305,18 +310,18 @@ def main():
             line = line.split(",")
             PC = PC + 4
 
-            regval[int(line[1])] = format(regval[int(line[2])] & regval[int(line[0])])
-            temp_val = format( int(regval[int(line[1])]),'032b')
+            regval[int(line[0])] = int(line[2], 16) & regval[int(line[1])]
+            #temp_val = format( int(regval[int(line[1])]),'032b')
 
             f.write('Operation: $' + line[1] + '= $' + line[0] + "&"  + line[2])
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
+            f.write('Registers that have changed: ' + '$' + str( int(line[2],16) ) + '=' + str(regval[int(line[0])]) + '\n')
 
         elif(line[0:3] == "ori"):
             line = line.replace("ori", "")
             line = line.split(",")
             PC = PC + 4
-            regval[int(line[1])] = format(regval[int(line[2])] | regval[int(line[0])])
+            regval[int(line[1])] = int(line[2],16) | regval[int(line[0])]
             temp_val = format( int(regval[int(line[1])]),'032b')
 
             # __, 0, 1, 2
@@ -325,8 +330,17 @@ def main():
             #rt = rs | imm()
             f.write('Operation: $' + line[1] + '= $' + line[0] + "|"  + line[2])
             f.write('PC is now at ' + str(PC) + '\n')
-            f.write('Registers that have changed: ' + '$' + str( int(line[2]) ) + '=' + str(regval[int(line[0])]) + '\n')
-            
+            f.write('Registers that have changed: ' + '$' + str( int(line[2],16) ) + '=' + str(regval[int(line[0])]) + '\n')
+
+        #hash
+        elif(line[0:4]=="func"):
+            line = line.replace("func","")
+            line = line.split(",")
+            A = regval[int(line[0])]
+            pattern_Reg = int(line[1])
+            B = int(line[2], 16)
+            hash(A, B, pattern_Reg, MEM, regval)
+
         #bne
         elif(line[0:3] == "bne"): # BNE
             line = line.replace("bne","")
@@ -346,15 +360,6 @@ def main():
                 continue
             f.write('No Registers have changed. \n')
         
-        #hash
-        elif(line[0:4]==hash):
-            line = line.replace("beq","")
-            line = line.split(",")
-            B = 0xFA19E366#int(line[0])
-            A = 0x01
-            max = 0
-            for(A in range(0x65)):
-                hash(B, A, max)
 
         #beq
         elif(line[0:3] == "beq"): # Beq
@@ -377,7 +382,6 @@ def main():
 
 
         elif(line[0:1] == "j"): # JUMP
-            #import pdb; pdb.set_trace()
             line = line.replace("j","")
             line = line.split(",")
             f.write('Operation: PC = nPC; ' + '\n')
@@ -398,6 +402,42 @@ def main():
             f.write('No Registers have changed. \n')
             continue
         lineCount = lineCount + 1
+    #print final results
+    #print(hex(MEM[0x2000]))
+    #print(hex(MEM[0x2004]))
+    #print(hex(MEM[0x2008]))
+    ("REGISTERS:")
+    print("-----------")
+    for x in range(len(regval)):
+        if(x == 24):
+            print("lo: ", hex(regval[x]))
+        elif(x == 25):
+            print("hi: ", hex(regval[x]))
+        else:
+            print("$", x,": ", hex(regval[x]))
+    print("PC: ", hex(PC))
+
+    print("\n")
+    print("Used Memory values:\n")
+    print("            ", end="")
+    for x in range(0,8,1):
+        print("0x"+ format((x*4),"08x"), end=" ")
+    print("\n")
+    print("--------------------------------------------------------------------------------------------------",end="")
+    count = 0
+    print("\n")
+    for x in range(0x2003,0x2100,4):
+        if((x-0x3)%0x20==0):
+            print("0x"+format(x-0x3,"08x") + '|', end=" ")
+        print("0x", end="")
+        for y in range(0,4,1):
+            print(format(MEM[x-y], "02x"), end="")
+        print(" ", end = "")
+        count += 1
+        if(count == 8):
+            count = 0
+            print("\n")
+
     f.close()
 
 if __name__ == "__main__":
